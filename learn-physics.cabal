@@ -53,12 +53,17 @@ extra-doc-files:    CHANGELOG.md
 -- extra-source-files:
 
 common essential
-    ghc-options: -Wall
+    ghc-options:      -Wall
     build-depends:    base ^>=4.17.2.1,
                       gnuplot ^>=0.5.7
-    hs-source-dirs:   src
     default-language: GHC2021
 
 executable hello-world  
     import:           essential
+    hs-source-dirs:   src
     main-is:          hello_world.hs
+
+executable graphing-simple-xy
+    import:           essential
+    hs-source-dirs:   src/graphing
+    main-is:          simple_xy.hs
