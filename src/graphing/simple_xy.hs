@@ -15,7 +15,7 @@ plot1 ::  IO ()
 plot1 = let details = [Title  "Projectile Motion"
                       ,XLabel "Time (s)"
                       ,YLabel "Projectile Height (m)"
-                      ,PNG    "projectile.png"
+                      ,PNG    "notes/images/graphing-simple-xy.png"
                       ,Key    Nothing
                       ] 
         in plotFunc details tRange (yPos 0 20 (-9.8))
