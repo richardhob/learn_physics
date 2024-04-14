@@ -81,3 +81,8 @@ executable ch14-car-graph
     import:           essential
     hs-source-dirs:   src/ch14
     main-is:          car_graph.hs
+
+executable ch14-pedal-coast
+    import:           essential
+    hs-source-dirs:   src/ch14
+    main-is:          pedal_coast.hs

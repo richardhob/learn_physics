@@ -27,3 +27,24 @@ positionCF mass x0 v0 forces = let net_forces = sum forces
                                    a0 = net_forces / mass
                                    x t = x0 + v0 * t + a0 * (t**2) / 2
                                in x
+
+-- Get the the velocity function when forces depend on time
+--
+-- Args:
+--   dt = Integration time step
+--   mass = mass
+--   v0 = Initial velocity
+--   forces = list of force functions
+velocityFt :: R -> Mass -> Velocity -> [(Time -> Force)] -> (Time -> Velocity)
+velocityFt dt mass v0 forces = let net t = sum [f t | f <- forces]
+                                   a t = net t / mass
+                               in antiDerivative dt v0 a
+
+positionFt :: R -> Mass -> Position -> Velocity -> [(Time -> Force)] -> (Time -> Position)
+positionFt dt mass x0 v0 forces = antiDerivative dt x0 (velocityFt dt mass v0 forces)
+
+antiDerivative :: R -> R -> (R -> R) -> (R -> R)
+antiDerivative dt v0 a t = v0 + integral dt a 0 t
+
+integral :: R -> (R -> R) -> R -> R -> R
+integral dt f a b = sum [f t * dt | t <- [a+dt/2, a+3*dt/2 .. b-dt/2]]
