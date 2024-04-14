@@ -51,12 +51,21 @@ extra-doc-files:    CHANGELOG.md
 
 -- Extra source files to be distributed with the package, such as examples, or a tutorial module.
 -- extra-source-files:
+library 
+    ghc-options:      -Wall
+    build-depends:    base ^>=4.17.2.1,
+                      gnuplot ^>=0.5.7,
+    exposed-modules:  Physics.Newton2
+    hs-source-dirs:   libs
+    default-language: GHC2021
 
 common essential
     ghc-options:      -Wall
     build-depends:    base ^>=4.17.2.1,
-                      gnuplot ^>=0.5.7
+                      gnuplot ^>=0.5.7,
+                      learn-physics
     default-language: GHC2021
+
 
 executable hello-world  
     import:           essential
@@ -67,3 +76,8 @@ executable graphing-simple-xy
     import:           essential
     hs-source-dirs:   src/graphing
     main-is:          simple_xy.hs
+
+executable ch14-car-graph
+    import:           essential
+    hs-source-dirs:   src/ch14
+    main-is:          car_graph.hs
