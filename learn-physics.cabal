@@ -86,3 +86,8 @@ executable ch14-pedal-coast
     import:           essential
     hs-source-dirs:   src/ch14
     main-is:          pedal_coast.hs
+
+executable ch14-bike-velocity
+    import:           essential
+    hs-source-dirs:   src/ch14
+    main-is:          bike_velocity.hs

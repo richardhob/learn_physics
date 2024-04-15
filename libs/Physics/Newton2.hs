@@ -1,8 +1,6 @@
 
 module Physics.Newton2 where
 
--- import Graphics.Gnuplot.Simple
-
 type R = Double
 
 -- Type synonyms
@@ -48,3 +46,20 @@ antiDerivative dt v0 a t = v0 + integral dt a 0 t
 
 integral :: R -> (R -> R) -> R -> R -> R
 integral dt f a b = sum [f t * dt | t <- [a+dt/2, a+3*dt/2 .. b-dt/2]]
+
+fAir :: R -> R -> R -> Velocity -> Force
+fAir drag rho area v = (-drag) * rho * area * (abs v * v/2)
+
+newtonSecondV :: Mass -> [Velocity -> Force] -> Velocity -> R
+newtonSecondV mass forces v0 = sum [f v0 | f <- forces] / mass
+
+updateVelocity :: R -> Mass -> [Velocity -> Force] -> Velocity -> Velocity
+updateVelocity dt mass forces v0 = v0 + (newtonSecondV mass forces v0) * dt
+
+velocityFv :: R -> Mass -> Velocity -> [Velocity -> Force] -> (Time -> Velocity)
+velocityFv dt mass v0 forces t 
+    = let steps = abs $ round (t / dt)
+          vF = updateVelocity dt mass forces
+      in if steps == 0 
+         then v0
+         else last $ take steps $ iterate vF v0 
