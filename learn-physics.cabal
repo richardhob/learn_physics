@@ -96,3 +96,8 @@ executable ch14-pedal-coast-air
     import:           essential
     hs-source-dirs:   src/ch14
     main-is:          pedal_coast_air.hs
+
+executable ch14-exercises
+    import:           essential
+    hs-source-dirs:   src/ch14
+    main-is:          exercises.hs
