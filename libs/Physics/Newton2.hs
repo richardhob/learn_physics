@@ -63,3 +63,24 @@ velocityFv dt mass v0 forces t
       in if steps == 0 
          then v0
          else last $ take steps $ iterate vF v0 
+
+newtonSecondTV :: Mass -> [(Time, Velocity) -> Force] -> (Time, Velocity) -> (R, R)
+newtonSecondTV mass forces (t, v0)
+    = let net = sum [f (t, v0) | f <- forces]
+          acc = net / mass
+      in (1, acc)
+
+updateTV :: R -> Mass -> [(Time, Velocity) -> Force] -> (Time, Velocity) -> (Time, Velocity)
+updateTV dt mass forces (t, v0)
+    = let (dtdt, dvdt) = newtonSecondTV mass forces (t, v0)
+      in (t + dtdt*dt, v0 + dvdt*dt)
+
+statesTV :: R -> Mass -> (Time, Velocity) -> [(Time, Velocity) -> Force] -> [(Time, Velocity)]
+statesTV dt mass tv0 forces = iterate (updateTV dt mass forces) tv0
+
+velocityTV :: R -> Mass -> (Time, Velocity) -> [(Time, Velocity) -> Force] -> Time -> Velocity
+velocityTV dt mass tv0 forces t
+    = let steps = abs $ round (t / dt)
+      in if (steps == 0)
+         then snd tv0
+         else snd $ last $ take steps (statesTV dt mass tv0 forces)
