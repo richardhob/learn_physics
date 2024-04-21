@@ -23,6 +23,23 @@ plot_14_2
           position = positionCF 0.1 (-1) 0 [0.04, -0.08]
       in plotFunc details [0,0.1..10] position
 
+-- Exercise 14.3
+sumF :: [R -> Force] -> R -> Force
+sumF forces value
+    = sum [f value | f <- forces]
+
+-- Exercise 14.4
+--
+-- Force only depends on the Velocity
+positionFv :: R -> Mass -> Position -> Velocity -> [Velocity -> Force] -> Time -> Position
+positionFv dt mass x0 v0 forces 
+    = let f0 = sum [f v0 | f <- forces]
+          a0 = f0 / mass
+          dv = antiDerivative dt 
+          net_force v = sum [f v | f <- forces]
+          a t = net_force t / mass
+          velocityFv = antiDerivative dt v0 a
+      in antiDerivative dt x0 (
 
 main :: IO ()
 main = do
