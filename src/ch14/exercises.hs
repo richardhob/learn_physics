@@ -33,14 +33,70 @@ sumF forces value
 -- Force only depends on the Velocity
 positionFv :: R -> Mass -> Position -> Velocity -> [Velocity -> Force] -> Time -> Position
 positionFv dt mass x0 v0 forces 
-    = let f0 = sum [f v0 | f <- forces]
-          a0 = f0 / mass
-          dv = antiDerivative dt 
-          net_force v = sum [f v | f <- forces]
+    = let net_forces v = sum [f v | f <- forces]
           a t = net_force t / mass
-          velocityFv = antiDerivative dt v0 a
-      in antiDerivative dt x0 (
+      in antiDerivative dt x0 (antiDerivative dt v0 a)
+
+-- Exercise 14.5
+--
+-- Rewrite bikeVelocity to use velocityFtv instead of velocityFv
+plot_14_5 :: IO () 
+plot_14_5 
+    = let bikeVelocity :: Time -> Velocity
+          bikeVelocity = let constant _ _ = 100
+                             air _ v = fAir 2 1.225 0.6 v
+                         in velocityFv 0.01 70 0 [constant air]
+          details = [Title "Bike Velocity"
+                    ,XLabel "Time (s)"
+                    ,YLabel "Velocity of Bike (m/s)"
+                    ,PNG "notes/images/ch14_e14_5.png"
+                    ,Key Nothing]
+      in plotFunc details [0,0.5..60] bikeVelocity
+
+-- Exercise 14_6 - skip cause it's BORING
+-- Exercise 14_7 - skip cause it's BORING
+-- Exercise 14_8 - skip casue it's BORING
+
+-- Exercise 14_9
+positionFtv :: R -> Mass -> Position -> Velocity -> [(Time,Velocity) -> Force] -> Time -> Position
+positionTV dt mass x0 v0 forces t 
+    = let v = velocityTV dt mass (t,v0) forces
+      in antiDerivative dt x0 v t
+
+-- Exercise 14_10
+plot_14_10 :: IO ()
+plot_14_10 
+    = let pedalCoast :: Time -> Force
+          pedalCoast t = let remainder :: Integer
+                             remainder = (truncate t) `mod` cycle_time
+                         in if remainder < 10 then 10 else 0
+
+          pcTV (t, _) = pedalCoast t
+          fAirTV (_, v) = fAir 2 1.225 0.5 v
+
+          pos :: Time -> Position
+          pos = positionTV 0.1 20 0, 0, [pcTV, fAirTV]
+          details = [Title "Pedaling and coasting with air"
+                    ,XLabel "Time (s)"
+                    ,YLabel "Position of Bike (m)"
+                    ,PNG    "notes/images/ch14_e14_10.png"
+                    ,Key    Nothing]
+
+      in plotFunc details [0,0.1..100] pos
+
+-- Exercise 14.11
+--
+-- Do some Euler methods by hand, using:
+--
+-- F (t, v0) = F1(t) + F2(V0) = 4 cos 2t - 3 v0
+--
+-- where v0 = 2 m/s
+--       dt = 0.1
+--
+-- Evaluate for 0.3 s
 
 main :: IO ()
 main = do
     plot_14_2
+    plot_14_5
+    plot_14_10
