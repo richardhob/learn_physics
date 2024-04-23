@@ -34,7 +34,7 @@ sumF forces value
 positionFv :: R -> Mass -> Position -> Velocity -> [Velocity -> Force] -> Time -> Position
 positionFv dt mass x0 v0 forces 
     = let net_forces v = sum [f v | f <- forces]
-          a t = net_force t / mass
+          a t = net_forces t / mass
       in antiDerivative dt x0 (antiDerivative dt v0 a)
 
 -- Exercise 14.5
@@ -59,7 +59,7 @@ plot_14_5
 
 -- Exercise 14_9
 positionFtv :: R -> Mass -> Position -> Velocity -> [(Time,Velocity) -> Force] -> Time -> Position
-positionTV dt mass x0 v0 forces t 
+positionFtv dt mass x0 v0 forces t 
     = let v = velocityTV dt mass (t,v0) forces
       in antiDerivative dt x0 v t
 
@@ -68,14 +68,14 @@ plot_14_10 :: IO ()
 plot_14_10 
     = let pedalCoast :: Time -> Force
           pedalCoast t = let remainder :: Integer
-                             remainder = (truncate t) `mod` cycle_time
+                             remainder = (truncate t) `mod` 20
                          in if remainder < 10 then 10 else 0
 
           pcTV (t, _) = pedalCoast t
           fAirTV (_, v) = fAir 2 1.225 0.5 v
 
           pos :: Time -> Position
-          pos = positionTV 0.1 20 0, 0, [pcTV, fAirTV]
+          pos = positionFtv 0.1 20 0 0 [pcTV, fAirTV]
           details = [Title "Pedaling and coasting with air"
                     ,XLabel "Time (s)"
                     ,YLabel "Position of Bike (m)"
