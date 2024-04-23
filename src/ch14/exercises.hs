@@ -95,20 +95,61 @@ plot_14_10
 --
 -- Evaluate for 0.3 s
 --
--- F (0, 2) = 4 - 6 = (-2)
--- F'(0, 2) = 2 + 0.1 * (-2) = 1.8
+-- F (0.1, 2) = 4 - 6 = (-2)
+-- F'(0.1, 2) = 2 + 0.1 * (-2) = 1.8
 --
--- F (0.1, 1.8) = 3.920 - ... = -1.480
--- F'(0.1, 1.8) = 1.8 + 0.1 * (-1.480) = 1.652
+-- F (0.2, 1.8) = 3.920 - ... = -1.480
+-- F'(0.2, 1.8) = 1.8 + 0.1 * (-1.480) = 1.652
 --
--- F (0.2, 1.652) = 3.684 - ... = -1.272
--- F'(0.2, 1.652) = 1.652 + (0.1 * (-1.272)) = 1.524  
+-- F (0.3, 1.652) = 3.684 - ... = -1.272
+-- F'(0.3, 1.652) = 1.652 + (0.1 * (-1.272)) = 1.524  
 --
--- F (0.3, 1.524) = 3.300 - ... = -1.272
--- F'(0.3, 1.524) = 1.524 + (0.1 * (-1.272) = 1.400
+-- F (0.4, 1.524) = 3.300 - ... = -1.272
+-- F'(0.4, 1.524) = 1.524 + (0.1 * (-1.272) = 1.400
+--
+-- Exercise 14.12
+--
+-- Plot v vs. t fro 14.11
+--
+plot_14_12 :: IO ()
+plot_14_12 
+    = let f_t (t, _) = 4 * cos (2 * t)
+          f_v (_, v) = -3 * v
+          ts = 0.01
+          vel t = velocityTV ts 1 (0, 2) [f_t, f_v] t
+          details = [Title "Velocity vs. Time"
+                    ,XLabel "Time (s)"
+                    ,YLabel "Velocity (m/s)"
+                    ,PNG "notes/images/ch14_e14_12.png"
+                    ,Key Nothing]
+      in plotFunc details [0.0,ts..1] vel
+
+-- Exercise 14.13
+--
+-- F(t,v) = av where a = -1 N s/m
+--
+-- Plot the velocity as a function of time. Compare results to the exact
+-- solution: 
+--
+-- 8e^{-at}
+plot_14_13 :: IO ()
+plot_14_13
+    = let force :: (Time, Velocity) -> Force
+          force (_, v) = (-1 * v)
+          ts = 0.1
+          vel dt = velocityTV dt 1 (0, 8) [force]
+          actual t = 8 * (exp  ((-1) * t))
+          details = [Title "Velocity vs. Time"
+                    ,XLabel "Time (s)"
+                    ,YLabel "Velocity (m/s)"
+                    ,PNG "notes/images/ch14_e14_13.png"
+                    ,Key Nothing]
+      in plotFuncs details [0.0,ts..1] [(vel ts), (actual)]
 
 main :: IO ()
 main = do
     plot_14_2
     plot_14_5
     plot_14_10
+    plot_14_12
+    plot_14_13
