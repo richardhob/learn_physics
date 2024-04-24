@@ -146,6 +146,37 @@ plot_14_13
                     ,Key Nothing]
       in plotFuncs details [0.0,ts..1] [(vel ts), (actual)]
 
+-- Exercise 14.14
+--
+-- Consider dv(t)/dt = cos(t + v(t)) where v(0) = 0
+--
+-- User the Euler method with a step size of dt = 0.01 to find v(t) over the
+-- interval of 0 < t < 3. Make a nice plot, and include the value of v(3) to
+-- five significant figures.
+plot_14_14 :: IO () 
+plot_14_14 
+    = let acc (t, v0) = cos (t + v0)
+          dt = 0.01
+
+          euler :: ((Time, Velocity) -> R) -> (Time, Velocity) -> R
+          euler f (t, v0) = let f0 = f (t, v0) in (v0 + (f0 * dt))
+
+          update (t, v0) = let dvdt = euler acc (t, v0) in (t + dt, dvdt)
+
+          states (t, v0) = iterate update (t, v0)
+
+          vel (t0, v0) t = let steps = abs $ round (t/dt)
+                           in if (steps == 0)
+                              then v0
+                              else snd $ last $ take steps (states (t0, v0))
+
+          details = [Title "Velocity vs. Time"
+                    ,XLabel "Time (s)"
+                    ,YLabel "Velocity (m/s)"
+                    ,PNG "notes/images/ch14_e14_14.png"
+                    ,Key Nothing]
+      in plotFunc details [0.0,dt..3] (vel (0, 0))
+
 main :: IO ()
 main = do
     plot_14_2
@@ -153,3 +184,4 @@ main = do
     plot_14_10
     plot_14_12
     plot_14_13
+    plot_14_14
