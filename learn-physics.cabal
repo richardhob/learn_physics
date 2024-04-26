@@ -55,7 +55,8 @@ library
     ghc-options:      -Wall
     build-depends:    base ^>=4.17.2.1,
                       gnuplot ^>=0.5.7,
-    exposed-modules:  Physics.Newton2
+    exposed-modules:  Physics.Newton2,
+                      Physics.Mechanics1D
     hs-source-dirs:   libs
     default-language: GHC2021
 
