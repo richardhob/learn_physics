@@ -1,8 +1,6 @@
 
 module Physics.Mechanics1D where
 
-import Physics.Newton2 (fAir)
-
 type R = Double
 
 -- Type synonyms
@@ -61,3 +59,37 @@ positionFTXV dt mass txv0 forces = position1D (statesTXV dt mass txv0 forces)
 
 springForce :: R -> State1D -> Force
 springForce k (_,x0,_) = -k * x0
+
+type UpdateFunction s = s -> s
+type DifferentialEquation s ds = s -> ds
+type NumericalMethod s ds = DifferentialEquation s ds -> UpdateFunction s
+
+solver :: NumericalMethod s ds -> DifferentialEquation s ds -> s -> [s]
+solver method = iterate . method
+
+class RealVectorSpace ds where
+    (+++) :: ds -> ds -> ds
+    scale :: R -> ds -> ds
+
+instance RealVectorSpace (R, R, R) where
+    (dtdt0, dxdt0, dvdt0) +++ (dtdt1, dxdt1, dvdt1)
+        = (dtdt0 + dtdt1, dxdt0 + dxdt1, dvdt0 + dvdt1)
+    scale w (dtdt, dxdt, dvdt) = (w * dtdt, w * dxdt, w * dvdt)
+
+class RealVectorSpace ds => Diff s ds where
+    shift :: R -> ds -> s -> s
+
+instance Diff State1D (R, R, R) where
+    shift dt (dtdt, dxdt, dvdt) (t, x, v) 
+        = (t + dtdt * dt, x + dxdt * dt, v + dvdt * dt)
+
+euler :: Diff s ds => R -> (s -> ds) -> s -> s
+euler dt deriv st0 = shift dt (deriv st0) st0
+
+rungeKutta4 :: Diff s ds => R -> (s -> ds) -> s -> s
+rungeKutta4 dt deriv st0 
+    = let m0 = deriv                  st0
+          m1 = deriv (shift (dt/2) m0 st0)
+          m2 = deriv (shift (dt/2) m1 st0)
+          m3 = deriv (shift (dt/2) m2 st0)
+      in shift (dt/6) (m0 +++ m1 +++ m1 +++ m2 +++ m2 +++ m3) st0

@@ -24,10 +24,13 @@ dampedGraph
     = let details = [Title "Ping Pong Ball on a Slinky"
                     ,XLabel "Time (s)"
                     ,YLabel "Position (m)"
-                    ,PNG "notes/images/ch15_damped_HO.png"
-                    ,Key Nothing]
-          path = [(t, x) | (t, x, _) <- take 3000 dampedStates]
-      in plotPath details path
+                    ,PNG "notes/images/ch15_damped_HO.png"]
+          (time_x, pos, vel) = unzip3 (take 3000 dampedStates)
+          pos_path = zip time_x pos
+          vel_path = zip time_x vel
+          style = [(defaultStyle {lineSpec = CustomStyle [LineTitle "Position"]}, pos_path)
+                  ,(defaultStyle {lineSpec = CustomStyle [LineTitle "Velocity"]}, vel_path)]
+      in plotListsStyle details style 
 
 main :: IO ()
 main = dampedGraph
