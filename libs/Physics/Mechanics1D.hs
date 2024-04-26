@@ -58,3 +58,6 @@ position1D states t
 
 positionFTXV :: TimeStep -> Mass -> State1D -> [State1D -> Force] -> Time -> Position
 positionFTXV dt mass txv0 forces = position1D (statesTXV dt mass txv0 forces)
+
+springForce :: R -> State1D -> Force
+springForce k (_,x0,_) = -k * x0
