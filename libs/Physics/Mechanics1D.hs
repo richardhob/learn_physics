@@ -84,12 +84,13 @@ instance Diff State1D (R, R, R) where
         = (t + dtdt * dt, x + dxdt * dt, v + dvdt * dt)
 
 euler :: Diff s ds => R -> (s -> ds) -> s -> s
-euler dt deriv st0 = shift dt (deriv st0) st0
+euler dt f st0 = shift dt (f st0) st0
 
 rungeKutta4 :: Diff s ds => R -> (s -> ds) -> s -> s
-rungeKutta4 dt deriv st0 
-    = let m0 = deriv                  st0
-          m1 = deriv (shift (dt/2) m0 st0)
-          m2 = deriv (shift (dt/2) m1 st0)
-          m3 = deriv (shift (dt/2) m2 st0)
+rungeKutta4 dt f st0 
+    = let m0 = f                  st0
+          m1 = f (shift (dt/2) m0 st0)
+          m2 = f (shift (dt/2) m1 st0)
+          m3 = f (shift (dt/2) m2 st0)
       in shift (dt/6) (m0 +++ m1 +++ m1 +++ m2 +++ m2 +++ m3) st0
+
