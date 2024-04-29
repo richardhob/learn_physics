@@ -72,6 +72,11 @@ executable ch15-DHO
     hs-source-dirs:   src/ch15
     main-is:          damped_harmonic_oscillator.hs
 
+executable ch15-exercises
+    import:           essential
+    hs-source-dirs:   src/ch15
+    main-is:          exercises.hs
+
 -- executable hello-world  
     -- import:           essential
     -- hs-source-dirs:   src
