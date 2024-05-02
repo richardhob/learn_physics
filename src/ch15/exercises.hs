@@ -140,7 +140,56 @@ plot_15_6
       in do
              plotPathsStyle details_100_v [(bb_style, bb_100_v), (pp_style, pp_100_v)]
              plotPathsStyle details_100_p [(bb_style, bb_100_p), (pp_style, pp_100_p)]
-           
+
+-- 15_7 - Boring, repeat of 15_5 mostly
+
+-- 15_8 - Consider an object with mss 'm' attached to a spring with a spring
+-- constant 'k'. The other end of the spring is attached to a vertical wall. The
+-- object slides hoizontally across the floor. There is a coefficient of kenetic
+-- friction (mew_k = 0.3) between the object and the floor. The weight of the
+-- object is mg, so the force of kinetic friction on the object is (mew * m *
+-- g), directed opposite the velocity of the object.
+--
+-- Assume m = 3 kg and k = 12 N/m
+--
+-- a. Write a function with type State1D -> Force that gives teh horizontal
+-- force of kinetic friction. You may want to use the signum function (which
+-- returns '1' if the argument is positive, and '-1' if the argument is negative
+--
+-- b. Use the function `positionFTXV` to find the position of the object as a
+-- function of time
+--
+-- c. Make a plot of position as a function of time
+--
+-- Note - working better right now, but the result is NOT quite right.
+plot_15_8 :: IO ()
+plot_15_8 
+    = let k = 12
+          mass = 3
+          mew = 0.3
+          dt = 0.001
+          max_t = 10
+
+          spring :: State1D -> Force
+          spring = springForce k
+
+          friction :: State1D -> Force
+          friction (_, _, v) = 9.8 * mass * mew 
+
+          total_f state = (spring state) - (friction state)
+
+          forces = [total_f]
+
+          pos = positionFTXV dt mass (0,1,0) forces
+          time_x = [0,dt..max_t]
+
+          details = [Title "Mass on spring with friction position vs time"
+                    ,XLabel "Time (s)"
+                    ,YLabel "Position (m)"
+                    ,PNG "notes/images/ch15_ex_15_8.png"
+                    ,Key Nothing]
+
+      in plotFunc details time_x pos
 
 main :: IO () 
 main = do
@@ -148,3 +197,4 @@ main = do
     plot_15_3
     plot_15_5
     plot_15_6
+    plot_15_8
